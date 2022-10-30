@@ -3,8 +3,6 @@ package com.klein.easypoi.domain.collection;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 import com.klein.easypoi.domain.basic.User;
-import com.klein.easypoi.domain.one2many.Car;
-import com.klein.easypoi.domain.one2many.UserObjectCollectionField;
 import lombok.Data;
 
 import java.util.*;
