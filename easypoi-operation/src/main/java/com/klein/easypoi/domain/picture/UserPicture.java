@@ -3,17 +3,23 @@ package com.klein.easypoi.domain.picture;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 import com.klein.easypoi.domain.basic.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-@Data
 @ExcelTarget("user")
-public class UserPicture extends User {
-    @Excel(name = "头像信息", type = 2, width = 20, height = 35)
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class UserPicture extends User implements Serializable {
+
+    @Excel(name = "头像信息", type = 2, width = 20, height = 35, savePath = "F:\\GitHub\\excel-operation\\easypoi-operation\\src\\test\\resources\\picture")
     private String avatar;
 
 

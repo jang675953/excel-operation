@@ -6,7 +6,6 @@
         <groupId>com.klein</groupId>
         <artifactId>excel-operation</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath/>
     </parent>
     <groupId>com.klein</groupId>
     <artifactId>easyexcel-operation</artifactId>
