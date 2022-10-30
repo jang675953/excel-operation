@@ -26,7 +26,7 @@ public class UserObjectCollectionField {
     @ExcelCollection(name = "拥有的汽车", orderNum = "5")
     private List<Car> cars;
 
-    public static List<UserObjectCollectionField> generate(){
+    public static List<UserObjectCollectionField> generate() {
         List<UserObjectCollectionField> userList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             UserObjectCollectionField user = new UserObjectCollectionField();

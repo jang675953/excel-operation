@@ -3,7 +3,7 @@ package com.klein.easyexcel.controller;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-import com.klein.easyexcel.domain.User;
+import com.klein.easyexcel.domain.annotation.User;
 import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,15 +23,15 @@ public class EasyExcelController {
         stopWatch.start();
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("utf-8");
-        String fileName = "EasyExcel";
-        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), User.class).sheet("模板").doWrite(data());
+        String fileName = "UserList.xlsx";
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+        EasyExcel.write(response.getOutputStream(), User.class).sheet("Sheet1").doWrite(data());
         stopWatch.stop();
         stopWatch.prettyPrint();
     }
 
     private Collection<?> data() {
-        return null;
+        return User.generate(10000);
     }
 
     /**

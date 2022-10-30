@@ -14,7 +14,7 @@ public class UserCollectionField extends User {
     @Excel(name = "技能", width = 60, orderNum = "5")
     private List<String> skills;
 
-    public static List<UserCollectionField> generateCustom(){
+    public static List<UserCollectionField> generateCustom() {
         List<UserCollectionField> userList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             UserCollectionField user = new UserCollectionField();

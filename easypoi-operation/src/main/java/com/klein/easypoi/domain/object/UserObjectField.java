@@ -17,7 +17,7 @@ public class UserObjectField extends User {
     @ExcelEntity(name = "address")
     private Address address;
 
-    public static List<UserObjectField> generateCustom(){
+    public static List<UserObjectField> generateCustom() {
         List<UserObjectField> userList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             UserObjectField user = new UserObjectField();
