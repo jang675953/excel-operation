@@ -4,8 +4,12 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.klein.easypoi.domain.basic.User;
 import com.klein.easypoi.domain.collection.UserCollectionField;
 import com.klein.easypoi.domain.object.UserObjectField;
@@ -13,14 +17,21 @@ import com.klein.easypoi.domain.one2many.UserObjectCollectionField;
 import com.klein.easypoi.domain.picture.UserPicture;
 import com.klein.easypoi.domain.verify.UserVerify;
 import com.klein.easypoi.domain.verify.VerifyGroupOne;
+import com.klein.easypoi.export.BigDataExportServer;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StopWatch;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 class EasyPoiOperationApplicationTests {
 
@@ -73,6 +84,41 @@ class EasyPoiOperationApplicationTests {
         workbook.write(outputStream);
         outputStream.close();
         workbook.close();
+    }
+
+    @Test
+    void templateWrite() throws IOException {
+        ClassPathResource classPathResource = new ClassPathResource("template/userListTemplate.xlsx");
+        final TemplateExportParams templateExportParams = new TemplateExportParams(classPathResource.getPath(), "sheet1");
+        final List<User> userList = User.generate();
+        final List<Map<String, Object>> mapList = userList.stream().map(user -> {
+            final Map<String, Object> objectMap = JSONObject.parseObject(JSON.toJSONString(user), new TypeReference<Map<String, Object>>() {
+            });
+            return objectMap;
+        }).collect(Collectors.toList());
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("nowDate", new Date());
+        dataMap.put("userList", userList);
+        Workbook workbook = ExcelExportUtil.exportExcel(templateExportParams, dataMap);
+        FileOutputStream outputStream = new FileOutputStream(BASE_PATH + "template\\userList.xls");
+        workbook.write(outputStream);
+        outputStream.close();
+        workbook.close();
+    }
+
+
+    @Test
+    public void bigDataExport() throws Exception {
+        StopWatch stopWatch = new StopWatch("大数据测试");
+        stopWatch.start();
+        ExportParams params = new ExportParams("大数据测试", "测试");
+        Workbook workbook = ExcelExportUtil.exportBigExcel(params, User.class, new BigDataExportServer(),10);
+        FileOutputStream outputStream = new FileOutputStream(BASE_PATH + "bigdata\\userList.xlsx");
+        workbook.write(outputStream);
+        outputStream.close();
+        workbook.close();
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
     }
 
     @Test

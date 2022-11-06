@@ -2,8 +2,14 @@ package com.klein.easyexcel;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.converters.date.DateStringConverter;
+import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.fill.FillConfig;
+import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
@@ -23,8 +29,7 @@ import org.springframework.util.ClassUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 class EasyExcelApplicationTests {
@@ -59,7 +64,7 @@ class EasyExcelApplicationTests {
         writeFont.setBold(Boolean.TRUE);
         headWriteCellStyle.setWriteFont(writeFont);
         List<WriteCellStyle> contentWriteCellStyleList = new ArrayList<>();
-        WriteCellStyle contentWriteCellStyle = null;
+        WriteCellStyle contentWriteCellStyle;
         for (int i = 0; i < 5; i++) {
             contentWriteCellStyle = new WriteCellStyle();
             contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
@@ -84,12 +89,17 @@ class EasyExcelApplicationTests {
 
     @Test
     void templateWrite() throws IOException {
-        EasyExcel.write(BASE_PATH + "template" + File.separator + "userMapWithTemplate.xlsx")
-                .withTemplate(new ClassPathResource("template/userMapTemplate.xlsx").getInputStream())
-                .autoCloseStream(Boolean.TRUE)
-                .needHead(Boolean.FALSE)
-                .sheet("sheet1")
-                .doWrite(UserMap.generate());
+        final ExcelWriter excelWriter = EasyExcel.write(BASE_PATH + "template" + File.separator + "userMapWithTemplate.xlsx")
+                .withTemplate(new ClassPathResource("template/userMapTemplate.xlsx").getInputStream()).registerConverter(new DateStringConverter()).build();
+        WriteSheet writeSheet = EasyExcel.writerSheet().build();
+        FillConfig fillConfigVertical = FillConfig.builder().direction(WriteDirectionEnum.VERTICAL).build();
+        FillConfig fillConfigHorizontal = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("nowDate", new Date());
+        excelWriter.fill(dataMap, fillConfigVertical, writeSheet);
+        excelWriter.fill(User.generate(), fillConfigVertical, writeSheet);
+        excelWriter.fill(new FillWrapper("data", User.generate()), fillConfigHorizontal, writeSheet);
+        excelWriter.close();
     }
 
 
@@ -117,12 +127,10 @@ class EasyExcelApplicationTests {
         final String pathName = BASE_PATH + "multisheet" + File.separator + FILE_NAME;
 
         try (ExcelReader excelReader = EasyExcel.read(pathName).build()) {
-            // 这里为了简单 所以注册了 同样的head 和Listener 自己使用功能必须不同的Listener
             ReadSheet readSheet1 =
                     EasyExcel.readSheet(0).head(User.class).registerReadListener(readListener).build();
             ReadSheet readSheet2 =
                     EasyExcel.readSheet(1).head(User.class).registerReadListener(readListener).build();
-            // 这里注意 一定要把sheet1 sheet2 一起传进去，不然有个问题就是03版的excel 会读取多次，浪费性能
             excelReader.read(readSheet1, readSheet2);
 
         }
