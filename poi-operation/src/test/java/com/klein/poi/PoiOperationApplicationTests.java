@@ -3,6 +3,7 @@ package com.klein.poi;
 import com.klein.poi.domain.basic.SexEnum;
 import com.klein.poi.domain.basic.User;
 import com.klein.poi.domain.picture.UserPicture;
+import com.klein.poi.utils.OSUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.junit.jupiter.api.Assertions;
@@ -295,6 +296,7 @@ class PoiOperationApplicationTests {
             users.add(user);
             rowCount++;
         }
+        final double availablePhysicalMemorySize = OSUtils.availablePhysicalMemorySize();
         Assertions.assertEquals(10, users.size());
         Assertions.assertEquals(11670, users.get(0).getAvatar().length);
         //5、关闭流
